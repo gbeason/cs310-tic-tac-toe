@@ -1,72 +1,86 @@
 package edu.jsu.mcis;
 
-import java.util.Scanner;
+import java.awt.*;
+import javax.swing.*;
 
-public class TicTacToeView {
+public class TicTacToeView extends JPanel {
 
-    private final Scanner keyboard;
+    private final TicTacToeController controller;
 
-    /* CONSTRUCTOR */
+    private final JButton[][] board;
+    private final JPanel squaresPanel;
+    private final JLabel resultLabel;
+    private int width;
 
-    public TicTacToeView() {
+    public TicTacToeView(TicTacToeController controller, int width) {
 
-        /* Initialize scanner (for console keyboard) */
+        this.controller = controller;
+        this.width = width;
 
-        keyboard = new Scanner(System.in);
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        board = new JButton[width][width];
+        squaresPanel = new JPanel(new GridLayout(width,width));
+        resultLabel = new JLabel();
+        resultLabel.setName("ResultLabel");
 
-    }
+        for (int row = 0; row < width; row++) {
 
-    public TicTacToeMove getNextMove(boolean isXTurn) {
+            for (int col = 0; col < width; col++) {
 
-        /* Prompt the player to enter the row and the column of their next move.
-           Return as a TicTacToeMove object. */
+                board[row][col] = new JButton();
+                board[row][col].addActionListener(controller);
+                board[row][col].setName("Square" + row + col);
+                board[row][col].setPreferredSize(new Dimension(64,64));
+                squaresPanel.add(board[row][col]);
 
-        // INSERT YOUR CODE HERE
-
-
-        if(isXTurn) {
-            System.out.print("Player 1 (X) Move:\n");
-        } else {
-            System.out.print("Player 2 (O) Move:\n");
-        }
-
-        System.out.print("Enter the row and column numbers, separated by a space: ");
-        String line = keyboard.nextLine();
-        String[] coordinates = line.split(" ");
-        boolean valid = true;
-        int row = -1;
-        int col = -1;
-        for (String i: coordinates) {
-            char[] prep = i.toCharArray();
-            for (char j : prep) {
-                if (coordinates.length != 2 || !Character.isDigit(j))
-                    valid = false;
             }
-        }
-        if (valid) {
-            row = Integer.parseInt(coordinates[0]);
-            col = Integer.parseInt(coordinates[1]);
+
         }
 
-        return new TicTacToeMove(row, col);
+        this.add(squaresPanel);
+        this.add(resultLabel);
+
+        resultLabel.setText("Welcome to Tic-Tac-Toe!");
 
     }
 
-    public void showInputError() {
+    public void updateSquares(JButton b, boolean turn, boolean empty) {
 
-        System.out.println("Entered location is invalid, already marked, or out of bounds.");
+      /* Refresh the GUI with updated data from the Model (via the Controller) */
+
+      if(empty == true){
+          if(turn == true){
+              b.setText("X");
+          }
+
+          else if(turn == false){
+              b.setText("O");
+          }
+
+      }
+    }
+
+    public void disableSquares() {
+
+        /* Disable buttons (to disallow input after game is over) */
+
+        for(int row = 0; row < width; ++row){
+            for(int col = 0; col < width; ++ col){
+                board[row][col].setEnabled(false);
+            }
+
+        }
+      }
+
+    public void showResult(String message) {
+
+        resultLabel.setText(message);
 
     }
 
-    public void showResult(String r) {
+    public void clearResult() {
 
-        System.out.println(r + "!");
-
-    }
-
-    public void showBoard(String board) {
-
-        System.out.println("\n\n" + board);
+        resultLabel.setText(" ");
 
     }
 
